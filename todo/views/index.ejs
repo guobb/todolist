@@ -1,18 +1,45 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html ng-app="todoModule">
+<head>
     <title>待办事项</title>
     <meta charset="utf-8">
     <meta name="viewport"
           content="width=device-width,user-scalable=no,initial-scale=1.0, maximum-scale=1.0,minimum-scale=1.0">
     <link rel="stylesheet" href="../public/lib/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css">
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
-  <script src="/lib/jquery/dist/jquery.js"></script>
-  <script src="/lib/bootstrap/dist/js/bootstrap.js"></script>
-  <script src="/lib/angular/angular.js"></script>
+</head>
+<body ng-controller="todoCtrl">
+
+    <div class="container" style="margin-top: 50px">
+        <div class="jumbotron text-center">
+            <h1>
+                <label class="label label-info">待办事项还有{{}}个</label>
+            </h1>
+        </div>
+        <div class="row">
+             <div class="col-md-offset-4 col-md-4">
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="todo in todos">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"> {{todo.text}}
+                            </label>
+                        </div>
+                    </li>
+                </ul>
+             </div>
+        </div>
+    </div>
+</body>
+<script src="/lib/jquery/dist/jquery.js"></script>
+<script src="/lib/bootstrap/dist/js/bootstrap.js"></script>
+<script src="/lib/angular/angular.js"></script>
+<script>
+
+    angular.module('todoModule', []);
+    angular.module('todoModule').controller('todoCtrl', ($scope) => {
+        $scope.todos = [{_id:1, text:"好的"},{_id:2, text:"坏的"}];
+    })
+
+</script>
 </html>
