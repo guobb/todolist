@@ -10,26 +10,41 @@
 </head>
 <body ng-controller="todoCtrl">
 
-    <div class="container" style="margin-top: 50px">
-        <div class="jumbotron text-center">
-            <h1>
-                <label class="label label-info">待办事项还有{{}}个</label>
-            </h1>
-        </div>
-        <div class="row">
-             <div class="col-md-offset-4 col-md-4">
-                <ul class="list-group">
-                    <li class="list-group-item" ng-repeat="todo in todos">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox"> {{todo.text}}
-                            </label>
-                        </div>
-                    </li>
-                </ul>
-             </div>
+<div class="container" style="margin-top: 50px">
+    <div class="jumbotron text-center">
+        <h1>
+            <label class="label label-info">待办事项还有{{}}个</label>
+        </h1>
+    </div>
+    <!--todos start-->
+    <div class="row">
+        <div class="col-md-offset-4 col-md-4">
+            <ul class="list-group">
+                <li class="list-group-item" ng-repeat="todo in todos">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox"> {{todo.text}}
+                        </label>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
+    <!--todos end-->
+    <div class="row">
+        <div class="col-md-offset-2 col-md-8 text-center">
+            <form>
+                <div class="form-group">
+                    <label for="text">新增事项</label>
+                    <input type="text" id="text" class="form-control" ng-model="todo.text">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" ng-class="addTodo()">增加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 <script src="/lib/jquery/dist/jquery.js"></script>
 <script src="/lib/bootstrap/dist/js/bootstrap.js"></script>
@@ -37,8 +52,33 @@
 <script>
 
     angular.module('todoModule', []);
-    angular.module('todoModule').controller('todoCtrl', ($scope) => {
-        $scope.todos = [{_id:1, text:"好的"},{_id:2, text:"坏的"}];
+
+    angular.module('todoModule').factory('todoServer', ($http) => {
+        return {
+            list: () => { // 查找所有
+                return $http.get('/todos');
+            },
+            add: (data) => { // 添加
+                // 把data放到请求体内
+                return $http.post('/todos', data);
+            }
+        }
+
+    });
+    angular.module('todoModule').controller('todoCtrl', ($scope, todoServer) => {
+        // 请求服务器所有得代办事项，返回一个promise
+        todoServer.list().success((todus) => {
+            $scope.todos = todos;
+        })
+
+        $scope.todo = {};
+        $scope.addTodo = () => {
+            // 保存新的事项
+            todoServer.add($scope.todo).success((todo) => {
+                $scope.todos.push(todo);
+            });
+        }
+
     })
 
 </script>
