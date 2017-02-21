@@ -1,0 +1,22 @@
+{
+  "name": "todo",
+  "description": "",
+  "main": "",
+  "authors": [
+    "guobb <18576469764@163.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/guobb/todolist",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.6.2",
+    "jquery": "^3.1.1",
+    "bootstrap": "^3.3.7"
+  }
+}
