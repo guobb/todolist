@@ -5,7 +5,6 @@
     <meta charset="utf-8">
     <meta name="viewport"
           content="width=device-width,user-scalable=no,initial-scale=1.0, maximum-scale=1.0,minimum-scale=1.0">
-    <link rel="stylesheet" href="../public/lib/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css">
 </head>
 <body ng-controller="todoCtrl">
@@ -13,17 +12,19 @@
 <div class="container" style="margin-top: 50px">
     <div class="jumbotron text-center">
         <h1>
-            <label class="label label-info">待办事项还有{{}}个</label>
+            <label class="label label-info">待办事项还有{{todo.length}}个</label>
         </h1>
     </div>
     <!--todos start-->
     <div class="row">
         <div class="col-md-offset-4 col-md-4">
+            <button class="btn btn-success" ng-click="selectAll()">全选</button>
             <ul class="list-group">
                 <li class="list-group-item" ng-repeat="todo in todos">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox"> {{todo.text}}
+                            <input type="checkbox" ng-checked="checked" ng-click="isSelected(todo._id)"> {{todo.text}}
+                            <span class="glyphicon glyphicon-minus" ng-click="delete(todo.id)"></span>
                         </label>
                     </div>
                 </li>
@@ -40,6 +41,7 @@
                 </div>
                 <div class="form-group">
                     <button class="btn btn-primary" ng-class="addTodo()">增加</button>
+                    <button class="btn btn-primary" ng-class="batchDelete()">批量删除</button>
                 </div>
             </form>
         </div>
@@ -61,7 +63,14 @@
             add: (data) => { // 添加
                 // 把data放到请求体内
                 return $http.post('/todos', data);
+            },
+            delete: (id) => {
+                return $http.delete('/todos/' + id);
+            },
+            batchDelete: (data) => {
+                return $http.delete('/todos/delete', data);
             }
+
         }
 
     });
@@ -77,7 +86,49 @@
             todoServer.add($scope.todo).success((todo) => {
                 $scope.todos.push(todo);
             });
+        };
+
+        $scope.delete = (id) => {
+            todoServer.delets(id).success((data) => {
+                $scope.todos = $scope.todos.filter((todo) => {
+                    return todo._id != id;
+                })
+            })
+        };
+
+        $scope.inSelected = [];
+        $scope.selected = 0;
+        $scope.isSelected = (id) => {
+            let index = $scope.selected.indexOf(id);
+            if (index >= 0) {
+                $scope.selected.splice(index, 1);
+            } else {
+                $scope.selected.push(id);
+            }
+
         }
+
+        $scope.batchDelete = () => {
+            todoServer.batchDelete($scope.selected).success(() => {
+                $scope.todos = $scope.todos.filter((todo) => {
+                    return $scope.selected.indexOf(todo._id) == -1;
+                })
+
+            })
+        }
+
+        $scope.selectAll = () => {
+            $scope.checked = $scope.checked ? 0 : 1;
+            //  清空要删除的id列表
+            $scope.selected.length = 0;
+            $scope.todos.forEach((todo) => {
+
+                $scope.selected.push(todo._id);
+
+            })
+
+        }
+
 
     })
 
